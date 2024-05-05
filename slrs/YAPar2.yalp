@@ -1,0 +1,28 @@
+
+%token id
+%token TOKON1
+%token TOKON2
+%token TOKON3
+%token TOKON4
+%token number
+%token TOKON5 TOKON6
+%token ws
+IGNORE ws
+
+%%
+
+expression:
+  | expression TOKON1 term
+  | expression TOKON2 term
+  | term
+;
+term:
+  | term TOKON3 factor
+  | term TOKON4 factor
+  | factor
+;
+factor:
+  | TOKON5 expression TOKON6
+  | id
+  | number
+;

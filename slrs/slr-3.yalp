@@ -1,0 +1,21 @@
+/* Configuración del parser para Gramática No.3 */
+/* Sigue la gramática SLR: */
+/* E -> T + E | T */
+/* T -> number por T | number | ( E ) */
+
+%token number
+%token TOKON1
+%token TOKON2
+%token TOKON3 TOKON4
+
+%%
+
+expression:
+    term TOKON1 expression
+  | term
+;
+term:
+    number TOKON2 term
+  | number
+  | TOKON3 expression TOKON4
+;

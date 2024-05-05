@@ -1,0 +1,98 @@
+/* Configuración del parser para Gramática No.4 */
+/* Sigue la gramática SLR: */
+/* P -> T */
+/* T -> M Q */
+/* T -> M */
+/* Q -> ; M Q */
+/* Q -> ; M */
+/* M -> A */
+/* A -> id assignop E */
+/* E -> X Z */
+/* E -> X */
+/* Z -> < X */
+/* Z -> eq X */
+/* X -> R W */
+/* X -> R */
+/* W -> Y W */
+/* W -> Y */
+/* Y -> + R */
+/* Y -> - R */
+/* R -> F V */
+/* R -> F */
+/* V -> J V */
+/* V -> J */
+/* J -> por F */
+/* J -> / F */
+/* F -> (E) */
+/* F -> number */
+/* F -> id */
+
+%token id
+%token number
+%token TOKON9
+%token TOKON10
+%token TOKON1
+%token TOKON2
+%token TOKON3
+%token TOKON4
+%token TOKON6
+%token TOKON8
+%token TOKON5
+%token TOKON7
+
+%%
+
+p:
+    t
+;
+t:
+    m q
+  | m
+;
+q:
+    TOKON1 m q
+  | TOKON1 m
+;
+m:
+    a
+;
+a:
+    id TOKON2 e
+;
+e:
+    x z
+  | x
+;
+z:
+    TOKON3 x
+  | TOKON4 x
+;
+x:
+    r w
+  | r
+;
+w:
+    y w
+  | y
+;
+y:
+    TOKON5 r
+  | TOKON6 r
+;
+r:
+    f v
+  | f
+;
+v:
+    j v
+  | j
+;
+j:
+    TOKON7 f
+  | TOKON8 f
+;
+f:
+    TOKON9 e TOKON10
+  | number
+  | id
+;

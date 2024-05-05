@@ -1,0 +1,31 @@
+/* Configuración del parser para Gramática No.2 */
+/* Sigue la gramática SLR: */
+/* E -> E + T | E - T | T */
+/* T -> T por F | T / F | F */
+/* F -> ( E ) | id | number */
+
+%token id
+%token TOKON4
+%token TOKON5
+%token TOKON6
+%token TOKON7
+%token number
+%token TOKON8 TOKON9
+
+%%
+
+expression:
+    expression TOKON4 term
+  | expression TOKON5 term
+  | term
+;
+term:
+    term TOKON6 factor
+  | term TOKON7 factor
+  | factor
+;
+factor:
+    TOKON8 expression TOKON9
+  | id
+  | number
+;

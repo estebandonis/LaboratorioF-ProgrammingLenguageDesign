@@ -1,0 +1,37 @@
+(* Lexer para Gramática No. 2 - Expresiones aritméticas extendidas *)
+
+(* Introducir cualquier header aqui *)
+
+{
+
+print("inicio")
+
+}
+
+let delim = ["\s\t\n"]
+let ws = delim+
+let letter = ['A'-'Z''a'-'z']
+let digit = ['0'-'9']
+let digits = digit+
+let id = letter(letter|digit)*
+let number = digits('.'digits)?('E'['+''-']?digits)?
+
+rule tokens = 
+    ws        { print('WHITESPACE') }               (* Cambie por una acción válida, que devuelva el token *)
+  | id        { print('ID') }
+  | number    { print('NUMBER') }
+  | "IF"       { print('IF') }
+  | "THEN"       { print('THEN') }
+  | "ELSE"       { print('ELSE') }
+  | '+'       { print('PLUS') }
+  | '-'       { print('MINUS') }
+  | '*'       { print('TIMES') }
+  | '/'       { print('DIV') }
+  | '('       { print('LPAREN') }
+  | ')'       { print('RPAREN') }
+
+(* Introducir cualquier trailer aqui *)
+
+{
+print('Termino')
+}
