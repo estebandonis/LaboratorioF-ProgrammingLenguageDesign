@@ -67,19 +67,10 @@ def main(producciones, items):
             automatonTransitions.append([state, "$", "accept"])
             break
 
-    # for state in automatonStates:
-    #     print("\n")
-    #     print(state)
-    #     print("nucleo:, ")
-    #     for n in automatonStates[state]['nucleo']:
-    #         print(n)
-    #     print("\nproducciones:, ")
-    #     for p in automatonStates[state]['producciones']:
-    #         print(p)
 
-    # print("\n\n")
-    # for transition in automatonTransitions:
-    #     print(transition)
+    Action, Goto = tableConstructor(Firsts, Follows, terminales)
+
+    print_table(Action, Goto, terminales, noTerminales)
 
     pydotplus.find_graphviz()
 
@@ -294,6 +285,82 @@ def follow(grammar, terminals, non_terminals, symbol, firstsList):
                     follow_set = follow_set.union(follow(grammar, terminals, non_terminals, simbolo, firstsList))
     
     return follow_set
+
+
+def tableConstructor(firstsList, followsList, terminals):
+    Action = {}
+    Goto = {}
+
+    for states in automatonStates:
+        allTransitions = []
+        tempTransitions = list(automatonStates[states].values())
+        for i in tempTransitions:
+            if len(i) == 1:
+                allTransitions.append(i[0])
+            else:
+                for j in i:
+                    allTransitions.append(j)
+
+
+        for nucleo in allTransitions:
+            if '.' in nucleo[1] and nucleo[1].index('.') < len(nucleo[1])-1:
+                nextSymbol = nucleo[1][nucleo[1].index('.')+1]
+                if nextSymbol in terminals:
+                    nextState = ""
+                    for tran in automatonTransitions:
+                        if states == tran[0] and nextSymbol == tran[1]:
+                            nextState = tran[2]
+                            Action[(states, nextSymbol)] = "S"+nextState[1:]
+
+            elif nucleo[1].index('.') == len(nucleo[1])-1 and nucleo[0] != producciones[0][0]:
+                beforeState = 0
+                result = nucleo[1].copy()
+                result.remove('.')
+                for num, prod in enumerate(producciones):
+                    if prod[0] == nucleo[0] and prod[1] == result:
+                        beforeState = num
+                        break
+                for ite in followsList[nucleo[0]]:
+                    Action[(states, ite)] = "R"+str(beforeState)
+            
+            elif nucleo[1].index('.') == len(nucleo[1])-1 and nucleo[0] == producciones[0][0]:
+                Action[(states, '$')] = "accept"
+        
+        for tran in automatonTransitions:
+            if tran[1] not in terminals and tran[1] != '$':
+                Goto[(tran[0], tran[1])] = tran[2][1:]
+
+    print("Action: ")
+    for key in Action:
+        print(key, ":", Action[key])
+
+    print("Goto: ")
+    for key in Goto:
+        print(key, ":", Goto[key])
+
+    return Action, Goto
+
+
+def print_table(action, goto, terminals, non_terminals):
+    # Print the header
+    print("{:<10}".format("State"), end="")
+    for terminal in terminals:
+        print("{:<10}".format(terminal), end="")
+    for non_terminal in non_terminals:
+        print("{:<10}".format(non_terminal), end="")
+    print()
+
+    # Get all states
+    states = set(state for state, _ in action.keys()).union(set(state for state, _ in goto.keys()))
+
+    # Print the rows
+    for state in sorted(states):
+        print("{:<10}".format(state), end="")
+        for terminal in terminals:
+            print("{:<10}".format(action.get((state, terminal), "")), end="")
+        for non_terminal in non_terminals:
+            print("{:<10}".format(goto.get((state, non_terminal), "")), end="")
+        print()
 
 
 def graph_automaton():
