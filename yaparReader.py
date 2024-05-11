@@ -13,16 +13,16 @@ import asciis.ascii_transformer as ascii_reg
 
 def main():
 
-    archivo = "slrs/YAPar2.yalp"
+    archivo = "slrs/slr-1.yalp"
     Machines = {
         # "Commentarios": "\"/*\" *[' '-'&''+'-'}''á''é''í''ó''ú''ñ''\n''\t']* *\"*/\"",
         "Commentarios": "\"/*\" *(^*)*\"*/\"",
         "Declaration": "%token ",
-        "Token": "['a'-'z''A'-'Z']['a'-'z''A'-'Z''|'' ''_''0'-'9']+",
+        "Token": "['a'-'z''A'-'Z''𝜀']['a'-'z''A'-'Z''|'' ''_''0'-'9''𝜀']*",
         "Ignore": "IGNORE ",
         "Producciones": "%%",
         "Produccion": "['a'-'z''A'-'Z''0'-'9']+:",
-        "Producto": "['a'-'z''A'-'Z''|''\n'' ''0'-'9']+;",
+        "Producto": "['a'-'z''A'-'Z''|''\n'' ''0'-'9''𝜀']+;",
     }
 
     start_time = time.time()
@@ -124,7 +124,7 @@ def getMachine(regex, graph=False):
     for i in estado_finalcon:
         estados_aceptacionAFD.add(str(i))
 
-    new_states, symbols, new_transitions, newStart_states, newFinal_states = dfa_min.exec(estadosAFD, alfabetoAFD, transicionesAFD, estado_inicialAFD, estados_aceptacionAFD, graph=graph, check=False)
+    new_states, symbol, new_transitions, newStart_states, newFinal_states = dfa_min.exec(estadosAFD, alfabetoAFD, transicionesAFD, estado_inicialAFD, estados_aceptacionAFD, graph=graph, check=False)
     return new_states, new_transitions, newStart_states, newFinal_states
 
 
@@ -246,7 +246,7 @@ def readYaparFile(Machines, archivo):
                         continue
 
                     else:
-                        print("Error lexico en la linea: ", data[i])
+                        print("Error lexico en la linea: ",'i'+data[i]+'i')
                         sys.exit()
                 continue
 

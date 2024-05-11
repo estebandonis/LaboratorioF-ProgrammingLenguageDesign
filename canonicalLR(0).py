@@ -15,6 +15,8 @@ automatonTransitions = []
 count = 0
 State = "I0"
 usedStates = []
+Firsts = {}
+Follows = {}
 
 def main(producciones, items):
     start_time = time.time()
@@ -46,26 +48,38 @@ def main(producciones, items):
     final[1].append(".")
     print("Final: ", final)
 
+    Firsts = firstFunction(producciones, terminales, noTerminales).copy()
+
+    print("Firsts: ")
+    for f in Firsts:
+        print(f+":", Firsts[f])
+
+
+    followFunction(producciones, terminales, noTerminales, Firsts)
+
+    print("Follows: ")
+    for f in Follows:
+        print(f+":", Follows[f])
+
     for state in automatonStates:
         core = automatonStates[state]['nucleo']
         if final in core:
             automatonTransitions.append([state, "$", "accept"])
             break
 
-    for state in automatonStates:
-        print("\n")
-        print(state)
-        print("nucleo:, ")
-        for n in automatonStates[state]['nucleo']:
-            print(n)
-        print("\nproducciones:, ")
-        for p in automatonStates[state]['producciones']:
-            print(p)
+    # for state in automatonStates:
+    #     print("\n")
+    #     print(state)
+    #     print("nucleo:, ")
+    #     for n in automatonStates[state]['nucleo']:
+    #         print(n)
+    #     print("\nproducciones:, ")
+    #     for p in automatonStates[state]['producciones']:
+    #         print(p)
 
-    print("\n\n")
-    for transition in automatonTransitions:
-        print(transition)
-
+    # print("\n\n")
+    # for transition in automatonTransitions:
+    #     print(transition)
 
     pydotplus.find_graphviz()
 
@@ -202,6 +216,84 @@ def addAutomaton(nucleo, product, X, currentState):
     print("\n\n")
     for transition in automatonTransitions:
         print(transition)
+
+
+def firstFunction(grammar, terminals, non_terminals):
+    firsts = {}
+
+    for non_terminal in non_terminals:
+        firsts[non_terminal] = first(grammar, terminals, non_terminals, non_terminal)
+
+    return firsts
+    
+
+def first(grammar, terminals, non_terminals, symbol):    
+    first_set = set()
+
+    if symbol in terminals:
+        first_set.add(symbol)
+
+    elif symbol in non_terminals:
+        for simbolo, production in producciones:
+            if simbolo != symbol:
+                continue
+
+            if production == '𝜀':
+                first_set.add('𝜀')
+            else:
+                for s in production:
+                    
+                    # ==================================================
+                    if s == symbol:
+                        continue
+                    # ==================================================
+
+                    s_first = first(grammar, terminals, non_terminals, s)
+
+                    if '𝜀' not in s_first:
+                        first_set = first_set.union(s_first)
+                        break
+
+                    s_first.remove('𝜀')
+
+                    first_set = first_set.union(s_first)
+                else:
+                    first_set.add('𝜀')
+
+    return first_set
+
+
+def followFunction(grammar, terminals, non_terminals, firstsList):
+    for non_terminal in noTerminales:
+        Follows[non_terminal] = follow(grammar, terminals, non_terminals, non_terminal, firstsList)
+
+
+def follow(grammar, terminals, non_terminals, symbol, firstsList):
+    follow_set = set()
+
+    if symbol == producciones[0][0]:
+        follow_set.add('$')
+
+    for simbolo, productions in producciones:
+        if symbol in productions:
+            position = productions.index(symbol)
+            if position != len(productions) - 1:
+                next_symbol = productions[position + 1]
+                if next_symbol in terminals:
+                    follow_set.add(next_symbol)
+                else:
+                    follow_set = follow_set.union(firstsList[next_symbol])
+
+                if next_symbol not in terminals and '𝜀' in firstsList[next_symbol]:
+                    follow_set.remove('𝜀')
+                    tempSet = Follows[simbolo]
+                    follow_set = follow_set.union(tempSet)
+
+            elif position == len(productions) - 1:
+                if simbolo != symbol:
+                    follow_set = follow_set.union(follow(grammar, terminals, non_terminals, simbolo, firstsList))
+    
+    return follow_set
 
 
 def graph_automaton():

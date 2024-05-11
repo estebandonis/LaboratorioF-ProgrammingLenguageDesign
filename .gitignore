@@ -1,0 +1,4 @@
+.DS_Store
+pngs/
+__pycache__/
+simuladores/__pycache__
