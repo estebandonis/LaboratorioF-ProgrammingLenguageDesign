@@ -21,7 +21,6 @@ Firsts = {}
 Follows = {}
 
 def main(producciones, items):
-    print(Grammar['tokens'])
     start_time = time.time()
 
     first = [producciones[0][0], producciones[0][1].copy()]
@@ -73,6 +72,8 @@ def main(producciones, items):
     Action, Goto = tableConstructor(Follows, terminales)
 
     print_table(Action, Goto, terminales, noTerminales)
+
+    print("\nEjecutando Simulación...")
 
     simulate_parsing(Action, Goto, Grammar['tokens'])
 
@@ -130,7 +131,7 @@ def goto(I, X):
                         break
 
                 try:
-                    print(currentState)
+                    type(currentState)
                 except:
                     break
 
