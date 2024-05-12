@@ -49,7 +49,7 @@ symbol_dict = {
 
 def main():
 
-    archivo = "slrs/YaLex2.yal"
+    archivo = "slrs/slr-1.yal"
     Machines = {
         "Commentarios": "\"(*\" *[' '-'&''+'-'}''á''é''í''ó''ú''ñ''\n''\t']* *\"*)\"",
         "Header": "{ *(^})*}",
@@ -98,6 +98,13 @@ def readYalexFile(file):
     return data
 
 
+def getGrammar():
+    Grammar = {}
+    with open("Grammar.pickle", "rb") as f:
+        Grammar = pickle.load(f)
+    return Grammar
+
+
 def main():
     archivo = "string.txt"
 
@@ -109,9 +116,16 @@ def main():
     with open("DFAMin.pickle", "rb") as f:
         DFAMin = pickle.load(f)
 
+    grammar = getGrammar()
+        
     start_time = time.time()
 
-    readString(data, DFAMin)
+    tokens = readString(data, DFAMin, grammar)
+
+    grammar["tokens"] = tokens
+
+    with open("Grammar.pickle", "wb") as f:
+        pickle.dump(grammar, f)
 
     end_time = time.time()
 
@@ -120,9 +134,10 @@ def main():
     print(f"\\nTime taken by the operation is {time_taken} seconds")
 
 
-def readString(data, DFAMin):
+def readString(data, DFAMin, grammar):
     i = 0
     contador = 0
+    tokens = []
 
     lengthData = len(data)
 
@@ -134,9 +149,20 @@ def readString(data, DFAMin):
             i += 1
             print("m: " + str(i))
             continue
+        token = ""
+        for key in DFAMin["new_returns"]:
+            if valores in DFAMin["new_returns"][key]:
+                token = key
+                break
+                
+        if len(grammar["ignores"]) == 1 and token != grammar["ignores"][0]:
+            tokens.append(token)
+        elif len(grammar["ignores"]) > 1 and token not in grammar["ignores"]:
+            tokens.append(token)
 
         print("m: " + str(num))
         print("Valor: " + temp)
+        print("Token: " + token)
         print("Command: " + valores)
         print("Ejecución: ")
         try:
@@ -146,6 +172,10 @@ def readString(data, DFAMin):
         contador += 1
         i = num
         continue
+    
+    print(tokens)
+        
+    return tokens
 
 if __name__ == "__main__":
     main()
@@ -234,6 +264,7 @@ if __name__ == "__main__":
         "start_states": newStart_states,
         "final_states": newFinal_states,
         "returns": tokens_dictionary,
+        "new_returns": tempdiccionario,
         "tokens": toekns
     }
 

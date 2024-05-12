@@ -15,7 +15,6 @@ def main():
 
     archivo = "slrs/slr-1.yalp"
     Machines = {
-        # "Commentarios": "\"/*\" *[' '-'&''+'-'}''á''é''í''ó''ú''ñ''\n''\t']* *\"*/\"",
         "Commentarios": "\"/*\" *(^*)*\"*/\"",
         "Declaration": "%token ",
         "Token": "['a'-'z''A'-'Z''𝜀']['a'-'z''A'-'Z''|'' ''_''0'-'9''𝜀']*",
@@ -27,7 +26,7 @@ def main():
 
     start_time = time.time()
 
-    terminales, diccionario, producciones = readYaparFile(Machines, archivo)
+    terminales, diccionario, producciones, ignores = readYaparFile(Machines, archivo)
 
     # tokenCheck(terminales)
 
@@ -50,11 +49,14 @@ def main():
 
     produccionesCheck(items, producciones)
 
+    print("Ignores: ", ignores)
+
     gramatica = {
         "terminales": terminales,
         "noTerminales": noTerminales,
         "producciones": producciones,
-        "items": items
+        "items": items,
+        "ignores": ignores
     }
 
     with open('Grammar.pickle', 'wb') as f:
@@ -172,6 +174,7 @@ def readYaparFile(Machines, archivo):
     terminales = []
     producciones_temp = []
     producciones = []
+    ignores = []
     contador = 0
     length_data = len(data)
     read_tokens = True
@@ -208,6 +211,7 @@ def readYaparFile(Machines, archivo):
                     if bol:
                         print("Token/s: " + valores)
                         diccionario[contador] = valores
+                        ignores.append(valores)
                         contador += 1
                         i = num
                         break
@@ -302,7 +306,7 @@ def readYaparFile(Machines, archivo):
         print("Error léxico, no se encontraron tokens")
         sys.exit()
 
-    return terminales, diccionario, producciones
+    return terminales, diccionario, producciones, ignores
 
 
 main()

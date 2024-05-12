@@ -1,9 +1,1 @@
-IF (23 < 40)
-    23  0
-    3 + 3 -2
-    23/4
-
-ELSE hoa - 4
-    caramba
- 
-THEN hola  8
+id * id + id

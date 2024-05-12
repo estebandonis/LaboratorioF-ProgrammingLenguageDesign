@@ -32,6 +32,8 @@ def exec(transiciones, estado_inicial, returns, cadena, i):
         if estado_actual == tran[0] and type(tran[1]) == str:
             valores = tran[1]
             break
+
+    print(returns)
     
     if returns != {}:
         for ret in returns:

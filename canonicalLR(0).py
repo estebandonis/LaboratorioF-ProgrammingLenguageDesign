@@ -21,6 +21,7 @@ Firsts = {}
 Follows = {}
 
 def main(producciones, items):
+    print(Grammar['tokens'])
     start_time = time.time()
 
     first = [producciones[0][0], producciones[0][1].copy()]
@@ -48,20 +49,19 @@ def main(producciones, items):
 
     final = [producciones[0][0], producciones[0][1].copy()]
     final[1].append(".")
-    print("Final: ", final)
 
     Firsts = firstFunction(producciones, terminales, noTerminales).copy()
 
-    print("Firsts: ")
-    for f in Firsts:
-        print(f+":", Firsts[f])
+    # print("Firsts: ")
+    # for f in Firsts:
+    #     print(f+":", Firsts[f])
 
 
     followFunction(producciones, terminales, noTerminales, Firsts)
 
-    print("Follows: ")
-    for f in Follows:
-        print(f+":", Follows[f])
+    # print("Follows: ")
+    # for f in Follows:
+    #     print(f+":", Follows[f])
 
     for state in automatonStates:
         core = automatonStates[state]['nucleo']
@@ -70,9 +70,11 @@ def main(producciones, items):
             break
 
 
-    Action, Goto = tableConstructor(Firsts, Follows, terminales)
+    Action, Goto = tableConstructor(Follows, terminales)
 
     print_table(Action, Goto, terminales, noTerminales)
+
+    simulate_parsing(Action, Goto, Grammar['tokens'])
 
     pydotplus.find_graphviz()
 
@@ -177,7 +179,6 @@ def addAutomaton(nucleo, product, X, currentState):
 
     if alreadyExists == False:
         count += 1
-        print("Creating state: I"+str(count))
         automatonStates["I"+str(count)] = {"nucleo": [nucleo], "producciones": product}
 
         automatonTransitions.append([currentState, X, "I"+str(count)])
@@ -195,20 +196,6 @@ def addAutomaton(nucleo, product, X, currentState):
 
         if add == False:
             automatonTransitions.append([currentState, X, nextState])
-    
-    for state in automatonStates:
-        print("\n")
-        print(state)
-        print("nucleo:, ")
-        for n in automatonStates[state]['nucleo']:
-            print(n)
-        print("\nproducciones:, ")
-        for p in automatonStates[state]['producciones']:
-            print(p)
-
-    print("\n\n")
-    for transition in automatonTransitions:
-        print(transition)
 
 
 def firstFunction(grammar, terminals, non_terminals):
@@ -289,7 +276,7 @@ def follow(grammar, terminals, non_terminals, symbol, firstsList):
     return follow_set
 
 
-def tableConstructor(firstsList, followsList, terminals):
+def tableConstructor(followsList, terminals):
     Action = {}
     Goto = {}
 
@@ -336,13 +323,10 @@ def tableConstructor(firstsList, followsList, terminals):
 
 
 def print_table(action, goto, terminals, non_terminals):
-    # Prepare the header
     header = ["State"] + terminals + non_terminals
 
-    # Get all states
     states = set(state for state, _ in action.keys()).union(set(state for state, _ in goto.keys()))
 
-    # Prepare the rows
     rows = []
     for state in sorted(states, key=lambda state: int(state[1:])):
         row = [state]
@@ -352,9 +336,67 @@ def print_table(action, goto, terminals, non_terminals):
             row.append(goto.get((state, non_terminal), ""))
         rows.append(row)
 
-    # Print the table
     print(tabulate(rows, headers=header, tablefmt="pretty"))
 
+
+def simulate_parsing(action, goto, input_string):
+    stack = [0]
+
+    input_string.append('$')
+
+    symbols = []
+
+    while True:
+        state = stack[-1]
+
+        symbol = input_string[0]
+
+        if ('I'+str(state), symbol) in action and action[('I'+str(state), symbol)][0] == "S":
+
+            print("Shift", action[('I'+str(state), symbol)])
+
+            stack.append(action[('I'+str(state), symbol)][1:])
+
+            symbols.append(input_string.pop(0))
+
+        elif ('I'+str(state), symbol) in action and action[('I'+str(state), symbol)][0] == "R":
+
+            nucleo, product = producciones[int(action[('I'+str(state), symbol)][1:])]
+
+            print("Reduce", action[('I'+str(state), symbol)], "with production: ", nucleo + " \u2192 " + ' '.join(product))
+
+            if len(product) == 1 and len(symbols) > 1:
+                symbols.insert(symbols.index(product[0]), nucleo)
+                symbols.remove(product[0])
+                stack.pop()
+            elif len(product) == 1 and len(symbols) == 1 and symbols == product:
+                symbols.clear()
+                symbols.append(nucleo)
+                stack.pop()
+            elif len(product) > 1 and symbols == product:
+                symbols.clear()
+                symbols.append(nucleo)
+                for i in range (0,len(product)):
+                    stack.pop()
+
+            stack.append(goto[('I'+str(stack[-1]), nucleo)])
+
+        elif ('I'+str(state), symbol) in action and action[('I'+str(state), symbol)] == "accept":
+            print("Input aceptado")
+            return
+
+        else:
+            print("Input rechazado")
+            print("Error en estado:", 'I'+state, "con simbolo", symbol)
+            return
+        
+
+def is_sublist(larger, smaller):
+    smaller_length = len(smaller)
+    for i in range(len(larger)):
+        if larger[i:i+smaller_length] == smaller:
+            return True
+    return False
 
 def graph_automaton():
 

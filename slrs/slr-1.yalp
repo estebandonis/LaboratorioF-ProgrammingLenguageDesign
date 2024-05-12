@@ -1,21 +1,21 @@
 %token ws
 %token id
-%token PLUS
-%token TIMES
-%token LPAREN RPAREN
+%token TOKON1
+%token TOKON2
+%token TOKON3 TOKON4
 IGNORE ws
 
 %%
 
 expression:
-    expression PLUS term
+    expression TOKON1 term
   | term
 ;
 term:
-    term TIMES factor
+    term TOKON2 factor
   | factor
 ;
 factor:
-    LPAREN expression RPAREN
+    TOKON3 expression TOKON4
   | id
 ;
