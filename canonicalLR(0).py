@@ -291,7 +291,6 @@ def tableConstructor(followsList, terminals):
                 for j in i:
                     allTransitions.append(j)
 
-
         for nucleo in allTransitions:
             if '.' in nucleo[1] and nucleo[1].index('.') < len(nucleo[1])-1:
                 nextSymbol = nucleo[1][nucleo[1].index('.')+1]
@@ -300,7 +299,13 @@ def tableConstructor(followsList, terminals):
                     for tran in automatonTransitions:
                         if states == tran[0] and nextSymbol == tran[1]:
                             nextState = tran[2]
-                            Action[(states, nextSymbol)] = "S"+nextState[1:]
+                            if (states, nextSymbol) in Action:
+                                print("Se está intentando agregar un estado que ya existe en la tabla de acción")
+                                print("Combinación: ", '('+states, ite+')')
+                                print("Action: ", Action[(states, ite)])
+                                print("Nueva Action: ", "R"+str(beforeState))
+                            else:
+                                Action[(states, nextSymbol)] = "S"+nextState[1:]
 
             elif nucleo[1].index('.') == len(nucleo[1])-1 and nucleo[0] != producciones[0][0]:
                 beforeState = 0
@@ -311,7 +316,14 @@ def tableConstructor(followsList, terminals):
                         beforeState = num
                         break
                 for ite in followsList[nucleo[0]]:
-                    Action[(states, ite)] = "R"+str(beforeState)
+                    if (states, ite) in Action:
+                        print("Se está intentando agregar un estado que ya existe en la tabla de acción")
+                        print("Combinación: ", '('+states, ite+')')
+                        print("Action: ", Action[(states, ite)])
+                        print("Nueva Action: ", "R"+str(beforeState))
+                    else:
+                        Action[(states, ite)] = "R"+str(beforeState)
+
             
             elif nucleo[1].index('.') == len(nucleo[1])-1 and nucleo[0] == producciones[0][0]:
                 Action[(states, '$')] = "accept"
@@ -390,7 +402,7 @@ def simulate_parsing(action, goto, input_string):
             print("Input rechazado")
             print("Error en estado:", 'I'+state, "con simbolo", symbol)
             return
-        
+
 
 def is_sublist(larger, smaller):
     smaller_length = len(smaller)
@@ -398,6 +410,7 @@ def is_sublist(larger, smaller):
         if larger[i:i+smaller_length] == smaller:
             return True
     return False
+
 
 def graph_automaton():
 

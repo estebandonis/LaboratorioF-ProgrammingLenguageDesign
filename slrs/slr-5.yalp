@@ -1,0 +1,29 @@
+%token ID
+%token PLUS
+%token TIMES
+%token POWER
+%token LPAREN RPAREN
+%token WS
+IGNORE WS
+
+%%
+
+expression:
+    expression PLUS term
+  | term
+;
+
+term:
+    term TIMES factor
+  | factor
+;
+
+factor:
+    factor POWER base
+  | base
+;
+
+base:
+    LPAREN expression RPAREN
+  | ID
+;

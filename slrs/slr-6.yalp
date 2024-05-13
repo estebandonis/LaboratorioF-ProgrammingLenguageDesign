@@ -1,0 +1,18 @@
+
+%token id
+%token TOKON1
+%token TOKON2
+
+%%
+
+S:
+  | L TOKON1 R
+  | R
+;
+L:
+  | TOKON2 R
+  | id
+;
+R:
+  | L
+;

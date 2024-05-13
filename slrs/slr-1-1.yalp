@@ -3,7 +3,6 @@
 %token TIMES
 %token LPAREN RPAREN
 %token WS
-%token 𝜀
 IGNORE WS
 
 %%

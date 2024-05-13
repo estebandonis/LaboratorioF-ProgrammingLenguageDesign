@@ -28,7 +28,7 @@ def main():
 
     terminales, diccionario, producciones, ignores = readYaparFile(Machines, archivo)
 
-    # tokenCheck(terminales)
+    tokenCheck(terminales)
 
     print("\n\nTokens: ", terminales)
     print("\n\nDiccionario: ", diccionario)
@@ -76,7 +76,7 @@ def tokenCheck(tokens):
         DFAMin = pickle.load(f)
 
     for token in tokens:
-        if token not in DFAMin["tokens"]:
+        if token not in DFAMin["tokens"] and token != "𝜀":
             print("Error léxico, token no reconocido: ", token)
             sys.exit()
 
