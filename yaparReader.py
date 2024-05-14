@@ -13,7 +13,7 @@ import asciis.ascii_transformer as ascii_reg
 
 def main():
 
-    archivo = "slrs/slr-1.yalp"
+    archivo = "slrs/YAPar4.yalp"
     Machines = {
         "Commentarios": "\"/*\" *(^*)*\"*/\"",
         "Declaration": "%token ",
@@ -28,7 +28,7 @@ def main():
 
     terminales, diccionario, producciones, ignores = readYaparFile(Machines, archivo)
 
-    tokenCheck(terminales)
+    # tokenCheck(terminales)
 
     print("\n\nTokens: ", terminales)
     print("\n\nDiccionario: ", diccionario)
@@ -83,11 +83,11 @@ def tokenCheck(tokens):
 
 def produccionesCheck(items, producciones):
     for product in producciones:
-        if product[0] not in items:
+        if product[0] not in items and product[0] != "𝜀":
             print("Error léxico, token no reconocido: ", product[0])
             sys.exit()
         for elem in product[1]:
-            if elem not in items:
+            if elem not in items and elem != "𝜀":
                 print("Error léxico, token no reconocido: ", elem)
                 sys.exit()
 

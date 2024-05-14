@@ -1,5 +1,5 @@
 
-%token A B C D G H epsilon
+%token A B C D G H
 
 %%
 
@@ -14,9 +14,9 @@ a:
 ;
 b:
     | G
-    | epsilon
+    | 𝜀
 ;
 c:
     | H
-    | epsilon
+    | 𝜀
 ;

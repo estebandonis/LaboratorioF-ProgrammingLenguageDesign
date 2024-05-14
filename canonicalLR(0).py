@@ -1,6 +1,7 @@
 import pickle
 import pydotplus
 import time
+import sys
 
 from tabulate import tabulate
 
@@ -75,7 +76,9 @@ def main(producciones, items):
 
     print("\nEjecutando Simulación...")
 
-    simulate_parsing(Action, Goto, Grammar['tokens'])
+    # simulate_parsing(Action, Goto, Grammar['tokens'])
+
+    simulate_parsing(Action, Goto, ['ID', 'POWER', 'ID', 'POWER', 'ID'])
 
     pydotplus.find_graphviz()
 
@@ -301,9 +304,11 @@ def tableConstructor(followsList, terminals):
                             nextState = tran[2]
                             if (states, nextSymbol) in Action:
                                 print("Se está intentando agregar un estado que ya existe en la tabla de acción")
-                                print("Combinación: ", '('+states, ite+')')
-                                print("Action: ", Action[(states, ite)])
-                                print("Nueva Action: ", "R"+str(beforeState))
+                                print("Combinación: ",'Estado: '+states, 'Símbolo: ',nextSymbol)
+                                print("Action: ", Action[(states, nextSymbol)])
+                                print("Nueva Action: ", "R"+str(nextState[1:]))
+                                print("Terminando ejecución...")
+                                sys.exit()
                             else:
                                 Action[(states, nextSymbol)] = "S"+nextState[1:]
 
@@ -321,6 +326,8 @@ def tableConstructor(followsList, terminals):
                         print("Combinación: ", '('+states, ite+')')
                         print("Action: ", Action[(states, ite)])
                         print("Nueva Action: ", "R"+str(beforeState))
+                        print("Terminando ejecución...")
+                        sys.exit()
                     else:
                         Action[(states, ite)] = "R"+str(beforeState)
 
@@ -366,7 +373,7 @@ def simulate_parsing(action, goto, input_string):
 
         if ('I'+str(state), symbol) in action and action[('I'+str(state), symbol)][0] == "S":
 
-            print("Shift", action[('I'+str(state), symbol)])
+            print("Stack", stack, "State", state, "Symbols", symbols, "Shift", action[('I'+str(state), symbol)], "Input", input_string)
 
             stack.append(action[('I'+str(state), symbol)][1:])
 
@@ -376,7 +383,7 @@ def simulate_parsing(action, goto, input_string):
 
             nucleo, product = producciones[int(action[('I'+str(state), symbol)][1:])]
 
-            print("Reduce", action[('I'+str(state), symbol)], "with production: ", nucleo + " \u2192 " + ' '.join(product))
+            print("Stack", stack, "State", state, "Symbols", symbols, "Reduce", action[('I'+str(state), symbol)], "with production: ", nucleo + " \u2192 " + ' '.join(product), "Input", input_string)
 
             if len(product) == 1 and len(symbols) > 1:
                 symbols.insert(symbols.index(product[0]), nucleo)
@@ -400,7 +407,7 @@ def simulate_parsing(action, goto, input_string):
 
         else:
             print("Input rechazado")
-            print("Error en estado:", 'I'+state, "con simbolo", symbol)
+            print("Error en estado:", 'I'+str(state), "con simbolo", symbol)
             return
 
 
