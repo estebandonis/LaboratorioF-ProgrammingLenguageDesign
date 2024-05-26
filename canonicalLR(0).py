@@ -23,6 +23,7 @@ Follows = {}
 
 def main(producciones, items):
     start_time = time.time()
+    print()
 
     first = [producciones[0][0], producciones[0][1].copy()]
     first[1].insert(0, ".")
@@ -76,9 +77,9 @@ def main(producciones, items):
 
     print("\nEjecutando Simulación...")
 
-    # simulate_parsing(Action, Goto, Grammar['tokens'])
+    simulate_parsing(Action, Goto, Grammar['tokens'])
 
-    simulate_parsing(Action, Goto, ['ID', 'POWER', 'ID', 'POWER', 'ID'])
+    # simulate_parsing(Action, Goto, ['ID', 'POWER', 'ID', 'POWER', 'ID'])
 
     pydotplus.find_graphviz()
 
@@ -303,12 +304,20 @@ def tableConstructor(followsList, terminals):
                         if states == tran[0] and nextSymbol == tran[1]:
                             nextState = tran[2]
                             if (states, nextSymbol) in Action:
-                                print("Se está intentando agregar un estado que ya existe en la tabla de acción")
-                                print("Combinación: ",'Estado: '+states, 'Símbolo: ',nextSymbol)
-                                print("Action: ", Action[(states, nextSymbol)])
-                                print("Nueva Action: ", "R"+str(nextState[1:]))
-                                print("Terminando ejecución...")
-                                sys.exit()
+                                if "S" in Action[(states, nextSymbol)]:
+                                    print("Se ha detectado un error shift - reduce")
+                                    print("Combinación: ",'Estado: '+states, 'Símbolo: ',nextSymbol)
+                                    print("Acción Actual: ", Action[(states, nextSymbol)])
+                                    print("Nueva Acción: ", "R"+str(nextState[1:]))
+                                    print("Terminando ejecución...")
+                                    sys.exit()
+                                else:
+                                    print("Se ha detectado un error reduce - reduce")
+                                    print("Combinación: ",'Estado: '+states, 'Símbolo: ',nextSymbol)
+                                    print("Acción Actual: ", Action[(states, nextSymbol)])
+                                    print("Nueva Acción: ", "R"+str(nextState[1:]))
+                                    print("Terminando ejecución...")
+                                    sys.exit()
                             else:
                                 Action[(states, nextSymbol)] = "S"+nextState[1:]
 
@@ -322,12 +331,20 @@ def tableConstructor(followsList, terminals):
                         break
                 for ite in followsList[nucleo[0]]:
                     if (states, ite) in Action:
-                        print("Se está intentando agregar un estado que ya existe en la tabla de acción")
-                        print("Combinación: ", '('+states, ite+')')
-                        print("Action: ", Action[(states, ite)])
-                        print("Nueva Action: ", "R"+str(beforeState))
-                        print("Terminando ejecución...")
-                        sys.exit()
+                        if "S" in Action[(states, nextSymbol)]:
+                            print("Se ha detectado un error shift - reduce")
+                            print("Combinación: ",'Estado: '+states, 'Símbolo: ',nextSymbol)
+                            print("Acción Actual: ", Action[(states, nextSymbol)])
+                            print("Nueva Acción: ", "R"+str(nextState[1:]))
+                            print("Terminando ejecución...")
+                            sys.exit()
+                        else:
+                            print("Se ha detectado un error reduce - reduce")
+                            print("Combinación: ",'Estado: '+states, 'Símbolo: ',nextSymbol)
+                            print("Acción Actual: ", Action[(states, nextSymbol)])
+                            print("Nueva Acción: ", "R"+str(nextState[1:]))
+                            print("Terminando ejecución...")
+                            sys.exit()
                     else:
                         Action[(states, ite)] = "R"+str(beforeState)
 
