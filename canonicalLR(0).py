@@ -311,14 +311,14 @@ def tableConstructor(followsList, terminals):
                                     print("Acción Actual: ", Action[(states, nextSymbol)])
                                     print("Nueva Acción: ", "S"+str(nextState[1:]))
                                     print("Terminando ejecución...")
-                                    # sys.exit()
+                                    sys.exit() 
                                 else:
                                     print("Se ha detectado un error shift - reduce")
                                     print("Combinación: ",'Estado: '+states, 'Símbolo: ',nextSymbol)
                                     print("Acción Actual: ", Action[(states, nextSymbol)])
                                     print("Nueva Acción: ", "S"+str(nextState[1:]))
                                     print("Terminando ejecución...")
-                                    # sys.exit()
+                                    sys.exit()
                             else:
                                 Action[(states, nextSymbol)] = "S"+nextState[1:]
 
@@ -338,14 +338,14 @@ def tableConstructor(followsList, terminals):
                             print("Acción Actual: ", Action[(states, ite)])
                             print("Nueva Acción: ", "R"+str(nextState[1:]))
                             print("Terminando ejecución...")
-                            # sys.exit()
+                            sys.exit()
                         else:
                             print("Se ha detectado un error reduce - reduce")
                             print("Combinación: ",'Estado: '+states, 'Símbolo: ',ite)
                             print("Acción Actual: ", Action[(states, ite)])
                             print("Nueva Acción: ", "R"+str(nextState[1:]))
                             print("Terminando ejecución...")
-                            # sys.exit()
+                            sys.exit()
                     else:
                         Action[(states, ite)] = "R"+str(beforeState)
 
@@ -391,7 +391,7 @@ def simulate_parsing(action, goto, input_string):
 
         if ('I'+str(state), symbol) in action and action[('I'+str(state), symbol)][0] == "S":
 
-            print("Stack", stack, "State", state, "Symbols", symbols, "Shift", action[('I'+str(state), symbol)], "Input", input_string)
+            print("Stack:", stack, "  State:", state, "  Symbols:", symbols, "  Shift:", action[('I'+str(state), symbol)], "  Input:", input_string)
 
             stack.append(action[('I'+str(state), symbol)][1:])
 
@@ -401,7 +401,7 @@ def simulate_parsing(action, goto, input_string):
 
             nucleo, product = producciones[int(action[('I'+str(state), symbol)][1:])]
 
-            print("Stack", stack, "State", state, "Symbols", symbols, "Reduce", action[('I'+str(state), symbol)], "with production: ", nucleo + " \u2192 " + ' '.join(product), "Input", input_string)
+            print("Stack:", stack, "  State:", state, "  Symbols:", symbols, "  Reduce:", action[('I'+str(state), symbol)], "  Con producciones:", nucleo + " \u2192 " + ' '.join(product), "  Input", input_string)
 
             if len(product) == 1 and len(symbols) > 1:
                 symbols.insert(symbols.index(product[0]), nucleo)

@@ -13,7 +13,7 @@ import asciis.ascii_transformer as ascii_reg
 
 def main():
 
-    archivo = "slrs/sr.yalp"
+    archivo = "slrs/slr-1.yalp"
     Machines = {
         "Commentarios": "\"/*\" *(^*)*\"*/\"",
         "Declaration": "%token ",
