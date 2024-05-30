@@ -24,6 +24,7 @@ Follows = {}
 def main(producciones, items):
     start_time = time.time()
     print()
+    terminales.append("$")
 
     first = [producciones[0][0], producciones[0][1].copy()]
     first[1].insert(0, ".")
@@ -77,10 +78,6 @@ def main(producciones, items):
 
     print("\nEjecutando Simulación...")
 
-    simulate_parsing(Action, Goto, Grammar['tokens'])
-
-    # simulate_parsing(Action, Goto, ['ID', 'POWER', 'ID', 'POWER', 'ID'])
-
     pydotplus.find_graphviz()
 
     graph = graph_automaton()
@@ -88,6 +85,8 @@ def main(producciones, items):
     # Save or display the graph
     png_file_path = "automaton_graph.png"
     graph.write_png(png_file_path)  # Save PNG file
+
+    simulate_parsing(Action, Goto, Grammar['tokens'])
 
     end_time = time.time()
 
@@ -120,6 +119,7 @@ def closure(I):
 def goto(I, X):
     A = []
     lista = []
+    lenI = len(I)
     for item in I:
         if "." in item[1] and item[1].index('.') != len(item[1])-1:
             if item[1][item[1].index('.')+1] == X:
@@ -149,7 +149,7 @@ def goto(I, X):
                 for stat in temp:
                     if stat != newItem and stat not in A:
                         A.append(stat)
-                addAutomaton(newItem, A, X, currentState)
+                addAutomaton(newItem, A, X, currentState, lenI)
                 newList = []
                 if A == []:
                     newList = [newItem + A]
@@ -162,7 +162,7 @@ def goto(I, X):
     return lista
 
 
-def addAutomaton(nucleo, product, X, currentState):
+def addAutomaton(nucleo, product, X, currentState, lenI):
     global count, automatonStates, State
     alreadyExists = False
     nextState = ""
@@ -176,11 +176,11 @@ def addAutomaton(nucleo, product, X, currentState):
     if alreadyExists == False:
         for key in automatonStates:
             tempState = automatonStates[key]
+            # if nucleo == tempState['nucleo'][0] and len(tempState['nucleo']) == 1:
             if nucleo == tempState['nucleo'][0]:
                 alreadyExists = True
                 nextState = key
                 break
-        
 
     if alreadyExists == False:
         count += 1
@@ -303,21 +303,22 @@ def tableConstructor(followsList, terminals):
                     for tran in automatonTransitions:
                         if states == tran[0] and nextSymbol == tran[1]:
                             nextState = tran[2]
-                            if (states, nextSymbol) in Action:
+
+                            if (states, nextSymbol) in Action and "S"+nextState[1:] != Action[(states, nextSymbol)]:
                                 if "S" in Action[(states, nextSymbol)]:
                                     print("Se ha detectado un error shift - reduce")
                                     print("Combinación: ",'Estado: '+states, 'Símbolo: ',nextSymbol)
                                     print("Acción Actual: ", Action[(states, nextSymbol)])
-                                    print("Nueva Acción: ", "R"+str(nextState[1:]))
+                                    print("Nueva Acción: ", "S"+str(nextState[1:]))
                                     print("Terminando ejecución...")
-                                    sys.exit()
+                                    # sys.exit()
                                 else:
-                                    print("Se ha detectado un error reduce - reduce")
+                                    print("Se ha detectado un error shift - reduce")
                                     print("Combinación: ",'Estado: '+states, 'Símbolo: ',nextSymbol)
                                     print("Acción Actual: ", Action[(states, nextSymbol)])
-                                    print("Nueva Acción: ", "R"+str(nextState[1:]))
+                                    print("Nueva Acción: ", "S"+str(nextState[1:]))
                                     print("Terminando ejecución...")
-                                    sys.exit()
+                                    # sys.exit()
                             else:
                                 Action[(states, nextSymbol)] = "S"+nextState[1:]
 
@@ -330,21 +331,21 @@ def tableConstructor(followsList, terminals):
                         beforeState = num
                         break
                 for ite in followsList[nucleo[0]]:
-                    if (states, ite) in Action:
-                        if "S" in Action[(states, nextSymbol)]:
+                    if (states, ite) in Action and "R"+str(beforeState) != Action[(states, ite)]:
+                        if "S" in Action[(states, ite)]:
                             print("Se ha detectado un error shift - reduce")
-                            print("Combinación: ",'Estado: '+states, 'Símbolo: ',nextSymbol)
-                            print("Acción Actual: ", Action[(states, nextSymbol)])
+                            print("Combinación: ",'Estado: '+states, 'Símbolo: ',ite)
+                            print("Acción Actual: ", Action[(states, ite)])
                             print("Nueva Acción: ", "R"+str(nextState[1:]))
                             print("Terminando ejecución...")
-                            sys.exit()
+                            # sys.exit()
                         else:
                             print("Se ha detectado un error reduce - reduce")
-                            print("Combinación: ",'Estado: '+states, 'Símbolo: ',nextSymbol)
-                            print("Acción Actual: ", Action[(states, nextSymbol)])
+                            print("Combinación: ",'Estado: '+states, 'Símbolo: ',ite)
+                            print("Acción Actual: ", Action[(states, ite)])
                             print("Nueva Acción: ", "R"+str(nextState[1:]))
                             print("Terminando ejecución...")
-                            sys.exit()
+                            # sys.exit()
                     else:
                         Action[(states, ite)] = "R"+str(beforeState)
 

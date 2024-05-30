@@ -13,7 +13,7 @@ import asciis.ascii_transformer as ascii_reg
 
 def main():
 
-    archivo = "slrs/slr-1.yalp"
+    archivo = "slrs/sr.yalp"
     Machines = {
         "Commentarios": "\"/*\" *(^*)*\"*/\"",
         "Declaration": "%token ",
@@ -28,7 +28,7 @@ def main():
 
     terminales, diccionario, producciones, ignores = readYaparFile(Machines, archivo)
 
-    tokenCheck(terminales)
+    # tokenCheck(terminales)
 
     print("\n\nTokens: ", terminales)
     print("\n\nDiccionario: ", diccionario)

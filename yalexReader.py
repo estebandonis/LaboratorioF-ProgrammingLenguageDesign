@@ -154,10 +154,12 @@ def readString(data, DFAMin, grammar):
             if valores in DFAMin["new_returns"][key]:
                 token = key
                 break
-                
-        if len(grammar["ignores"]) == 1 and token != grammar["ignores"][0]:
-            tokens.append(token)
-        elif len(grammar["ignores"]) > 1 and token not in grammar["ignores"]:
+        if grammar["ignores"] != []:        
+            if len(grammar["ignores"]) == 1 and token != grammar["ignores"][0]:
+                tokens.append(token)
+            elif len(grammar["ignores"]) > 1 and token not in grammar["ignores"]:
+                tokens.append(token)
+        else:
             tokens.append(token)
 
         print("m: " + str(num))
